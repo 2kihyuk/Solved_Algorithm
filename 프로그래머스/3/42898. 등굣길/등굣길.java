@@ -9,7 +9,7 @@ class Solution {
             visited[puddles[i][1]][puddles[i][0]] = true;
         }
         //물웅덩이 위치 는 true로 설정.
-        
+
         int count[][] = new int[n+1][m+1];
         count[1][1] = 1;
         
