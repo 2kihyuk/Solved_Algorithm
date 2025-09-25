@@ -1,31 +1,32 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
 public class Main {
-    private static int V,E;
 
-    private static class Edge implements Comparable<Edge>{
-        int from,to,weight;
-        public Edge(int from ,int to, int weight){
-            this.from = from;
-            this.to =to;
+    private static int V,E;
+    private static class Vertex implements Comparable<Vertex>{
+        int to ,  weight;
+
+        public Vertex(int to, int weight){
+            this.to = to;
             this.weight = weight;
         }
 
         @Override
-        public int compareTo(Edge o) {
+        public int compareTo(Vertex o) {
             return this.weight - o.weight;
         }
     }
 
-    private static int[]parent;
-    private static Edge[] edgeList;
+    private static ArrayList<Vertex>[]adjList;
+    private static boolean[]visited;
 
     public static void main(String[] args)throws Exception {
+
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
@@ -33,9 +34,11 @@ public class Main {
         V = Integer.parseInt(st.nextToken());
         E = Integer.parseInt(st.nextToken());
 
-
-        edgeList = new Edge[E];
-
+        adjList = new ArrayList[V+1];
+        for (int i = 1; i <= V; i++) {
+            adjList[i] = new ArrayList<>();
+        }
+        visited = new boolean[V+1];
 
         for(int i = 0; i<E;i++){
             st = new StringTokenizer(br.readLine());
@@ -43,46 +46,35 @@ public class Main {
             int to = Integer.parseInt(st.nextToken());
             int weight = Integer.parseInt(st.nextToken());
 
-            edgeList[i] = new Edge(from,to,weight);
+            adjList[from].add(new Vertex(to,weight));
+            adjList[to].add(new Vertex(from,weight));
 
         }
-        Arrays.sort(edgeList);
 
-        makeSet();
-        int result = 0;
+        PriorityQueue<Vertex> pq = new PriorityQueue<>();
+        pq.offer(new Vertex(1,0));
+
+        int totalWeight = 0;
         int count = 0;
-       for(Edge edge : edgeList){
-           if(union(edge.from,edge.to)){
-               result+=edge.weight;
-               count++;
-               if(count == V-1) break;
-           }
-       }
-        System.out.println(result);
 
+        while(!pq.isEmpty()){
+            Vertex curr = pq.poll();
 
+            if(visited[curr.to]) continue;
+            visited[curr.to] = true;
+            totalWeight+=curr.weight;
+            count++;
 
-    }
+            if(count == V) break;
 
-    private static void makeSet(){
-        parent = new int[V+1];
-        for(int i = 1; i<=V;i++){
-            parent[i] = i;
+            for(Vertex next : adjList[curr.to]){
+                if(!visited[next.to]){
+                    pq.offer(new Vertex(next.to,next.weight));
+                }
+            }
         }
+        System.out.println(totalWeight);
+
+
     }
-    private static int find(int a){
-
-        if(parent[a] == a) return a;
-
-        return parent[a] = find(parent[a]);
-    }
-    private static boolean union(int a , int b){
-        int aRoot = find(a);
-        int bRoot = find(b);
-        if(aRoot == bRoot) return false;
-
-        parent[bRoot] = aRoot;
-        return true;
-    }
-
 }
