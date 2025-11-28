@@ -5,103 +5,95 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class Main {
-    private static int N;
-    private static int M;
+    private static int N,M,ans;
     private static int[][]arr;
+    private static ArrayList<int[]> tomato;
     private static boolean[][] visited;
-
-    private  static int[]dx = {-1,1,0,0};
-    private static int[]dy = {0,0,-1,1};
+    private static int[] dx = {-1,1,0,0};
+    private static int[] dy = {0,0,-1,1};
     public static void main(String[] args)throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
+
         M = Integer.parseInt(st.nextToken());
+        N = Integer.parseInt(st.nextToken());
 
-        arr = new int[M][N];
-        visited = new boolean[M][N];
+        arr = new int[N][M];
+        tomato = new ArrayList<>();
+        visited = new boolean[N][M];
 
-        ArrayList<int[]> list = new ArrayList<>();
+        int zero = 0;
 
-        for(int i = 0; i<M;i++){
-            st = new StringTokenizer(br.readLine().trim());
-            for(int j =0; j<N;j++){
+        for(int i = 0; i<N; i++){
+            st = new StringTokenizer(br.readLine());
+            for(int j = 0; j<M; j++){
                 arr[i][j] = Integer.parseInt(st.nextToken());
                 if(arr[i][j] == 1){
-                    list.add(new int[]{i,j});
+                    tomato.add(new int[]{i,j});
+                    zero++;
                 }
-            }
-        }
-
-        int day  = bfs(list);
-
-        for(int i = 0; i<M; i++){
-            for(int j = 0;j<N; j++){
-                if(arr[i][j] == -1) {
+                if(arr[i][j] == -1){
                     visited[i][j] = true;
                 }
+
             }
         }
 
+        bfs();
 
-        boolean ans = true;
-        
-        for(int i = 0; i<M; i++){
-            for(int j = 0;j<N; j++){
-                if(!visited[i][j]) {
-                    ans = false;
+        for(int i = 0; i<N; i++){
+            for(int j = 0; j<M; j++){
+                if(!visited[i][j]){
+                    ans = -1;
+                    break;
+                }else if(zero == N*M){
+                    ans = 0;
                     break;
                 }
             }
         }
 
-        System.out.println(ans ? day : -1);
-
-
-
+        System.out.println(ans);
     }
-
-    private static int bfs(ArrayList<int[]> list){
+    private static void bfs(){
 
         ArrayDeque<int[]> q = new ArrayDeque<>();
-        
-        for(int[] a : list){
-            int sx = a[0];
-            int sy = a[1];
-            visited[sx][sy] = true;
-            q.offer(new int[]{sx,sy});
+        int count = 0;
+
+        for(int[] t : tomato){
+            int tx = t[0];
+            int ty = t[1];
+            q.offer(new int[]{tx,ty});
+            visited[tx][ty] = true;
         }
 
 
-        int count = 0;
         while(!q.isEmpty()){
 
             int size = q.size();
 
-            for(int s = 0; s<size;s++){
+            for(int i = 0; i<size; i++){
+                int[] cur = q.poll();
+                int curX = cur[0];
+                int curY = cur[1];
 
-                int current[] = q.poll();
-                int cx = current[0];
-                int cy = current[1];
+                for(int d = 0; d<4; d++){
+                    int nx = curX + dx[d];
+                    int ny = curY + dy[d];
 
-                for(int i = 0; i<4; i++){
-                    int nx = cx + dx[i];
-                    int ny = cy + dy[i];
-
-                    if(nx < 0 || ny < 0 || nx >= M || ny >= N) continue;
-                    if(visited[nx][ny]) continue;
-                    if(arr[nx][ny] == -1) continue;
+                    if(nx < 0 || ny < 0 || nx >= N || ny >= M)continue;
+                    if(visited[nx][ny]) continue; // -1인곳과 방문한 곳은 이미 visited true
                     if(arr[nx][ny] == 0){
-                        visited[nx][ny] = true;
                         q.offer(new int[]{nx,ny});
+                        visited[nx][ny] = true;
                     }
                 }
             }
-            if(!q.isEmpty()){
-                count++;
-            }
+
+            if(!q.isEmpty()) count++;
         }
-        return count;
+        ans = count;
+
     }
 }
