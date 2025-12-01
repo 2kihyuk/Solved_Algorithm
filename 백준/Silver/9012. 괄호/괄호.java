@@ -18,26 +18,47 @@ public class Main {
             Stack<Character> stack = new Stack<>();
             boolean impossible = false;
 
-            for (char c : line.toCharArray()) {
+            int count = 0;
 
-                if (c == ')' && !stack.isEmpty()) {
-                    stack.pop();
-                } else if (c == ')' && stack.isEmpty()) {
-                    impossible = true;
-                } else {
-                    stack.push(c);
+            for(char c : line.toCharArray()){
+                if(c == '('){
+                    count++;
+                }else{
+                    count--;
+                    if(count<0) {
+                        impossible = true;
+                        break;
+                    }
                 }
-
-            }
-            if(impossible){
-                sb.append("NO");
-            }else if(stack.isEmpty()){
-                sb.append("YES");
-            }else{
-                sb.append("NO");
             }
 
+            if(count!=0){
+                impossible = true;
+            }
+            sb.append(impossible ? "NO" : "YES");
             sb.append('\n');
+
+//            for (char c : line.toCharArray()) {
+//
+//                if (c == ')' && !stack.isEmpty()) {
+//                    stack.pop();
+//                } else if (c == ')' && stack.isEmpty()) {
+//                    impossible = true;
+//                    break;
+//                } else {
+//                    stack.push(c);
+//                }
+//
+//            }
+//            if(impossible){
+//                sb.append("NO");
+//            }else if(stack.isEmpty()){
+//                sb.append("YES");
+//            }else{
+//                sb.append("NO");
+//            }
+//
+//            sb.append('\n');
 
         }
         System.out.println(sb);
